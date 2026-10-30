@@ -712,7 +712,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MODAL: RECORD ATTENDANCE (SCREENSHOT MATCH)-->
+  <!-- MODAL: RECORD ATTENDANCE                   -->
   <!-- ========================================== -->
   <div id="modal-record-attendance" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative">
@@ -1165,9 +1165,11 @@
     // 1. SUPABASE CLIENT
     const SUPABASE_URL = "https://oriimaqjjjatpxmqskfe.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yaWltYXFqamphdHB4bXFza2ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNDAyMDAsImV4cCI6MjEwODkxNjIwMH0.eYNdYiBbABLJUFdbF0jnhNJ8IeBxnb_hoVXgCIDjnnM";
-    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    const supabaseClient = (window.supabase && typeof window.supabase.createClient === 'function') 
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+      : null;
 
-    // 2. DEFAULT CLEAN PRODUCTION STATE
+    // 2. PRODUCTION DEFAULT STATE
     const DEFAULT_CLEAN_STATE = {
       session: {
         title: "SUE10031 Communicative English",
@@ -1241,8 +1243,8 @@
     async function loadStateFromCloud() {
       updateSyncStatus('Syncing...', 'amber');
       try {
-        if (!supabase) throw new Error("Supabase client offline");
-        const { data, error } = await supabase.from('sue_app_state').select('data').eq('id', 'primary_state').single();
+        if (!supabaseClient) throw new Error("Supabase client offline");
+        const { data, error } = await supabaseClient.from('sue_app_state').select('data').eq('id', 'primary_state').single();
         if (error && error.code !== 'PGRST116') {
           console.warn("Could not load from Supabase:", error);
           loadStateFromLocalStorage();
@@ -1264,8 +1266,8 @@
       updateSyncStatus('Saving...', 'amber');
       localStorage.setItem('sue_app_state_local', JSON.stringify(appState));
       try {
-        if (supabase) {
-          await supabase.from('sue_app_state').upsert({ id: 'primary_state', data: appState, updated_at: new Date() });
+        if (supabaseClient) {
+          await supabaseClient.from('sue_app_state').upsert({ id: 'primary_state', data: appState, updated_at: new Date() });
         }
         updateSyncStatus('Cloud Live', 'emerald');
       } catch (err) {
@@ -1323,8 +1325,13 @@
       const enteredUser = document.getElementById('login-id').value.trim();
       const enteredPassword = document.getElementById('login-pwd').value.trim();
 
-      // Check Lecturer Credentials
-      const isLecturerUser = (enteredUser.toLowerCase() === 'msdiyanasuhaimi@gmail.com' || enteredUser.toLowerCase() === 'msdiyanasuhaimi');
+      // Check Lecturer Credentials (Strict admin verification)
+      const isLecturerUser = (
+        enteredUser.toLowerCase() === 'msdiyanasuhaimi@gmail.com' || 
+        enteredUser.toLowerCase() === 'msdiyanasuhaimi' ||
+        enteredUser.toLowerCase() === 'nur diyana'
+      );
+
       if (isLecturerUser && enteredPassword === '*PSP870301aaa') {
         currentUser = { role: 'lecturer', name: 'Nur Diyana Mohd Suhaimi' };
         sessionStorage.setItem('sue_user_session', JSON.stringify(currentUser));
@@ -1483,14 +1490,13 @@
     }
 
     // ==========================================
-    // ATTENDANCE REGISTER (RECORD ATTENDANCE WORKFLOW)
+    // ATTENDANCE REGISTER
     // ==========================================
     function renderAttendanceSheet() {
       const selectedClass = document.getElementById('att-class-select').value;
       const contentArea = document.getElementById('att-content-area');
       const students = selectedClass === 'ALL' ? appState.students : appState.students.filter(s => s.className === selectedClass);
 
-      // If no students in the class, show exact empty state from screenshot
       if (students.length === 0) {
         contentArea.innerHTML = `
           <div class="py-16 text-center space-y-3">
@@ -1504,7 +1510,6 @@
           </div>
         `;
       } else {
-        // Table of Students with cumulative attendance
         let rowsHtml = '';
         students.forEach(st => {
           const hours = computeStudentHours(st.enrolmentId);
@@ -1585,10 +1590,8 @@
       showNotification("Attendance session deleted.", "info");
     }
 
-    // Modal: Record Attendance
     let modalAttendanceStatuses = {};
     function openRecordAttendanceModal() {
-      // Set today's date formatted as YYYY-MM-DD
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('rec-att-date').value = today;
       document.getElementById('rec-att-hours').value = 2;
