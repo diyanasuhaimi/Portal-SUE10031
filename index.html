@@ -367,7 +367,7 @@
               </div>
               <div class="sm:col-span-2">
                 <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Search Student (Name / IC / Enrolment)</label>
-                <input type="text" id="student-search-input" oninput="renderStudentListTable()" placeholder="Search..." class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500">
+                <input type="text" id="student-search-input" oninput="renderStudentListTable()" placeholder="Search name, IC, or enrolment number..." class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500">
               </div>
             </div>
 
@@ -432,7 +432,7 @@
             </div>
 
             <div class="mt-6">
-              <h3 class="font-bold text-slate-800 text-sm mb-3">Key Academic Highlights for SUE</h3>
+              <h3 class="font-bold text-slate-800 text-sm mb-3">Key Academic Highlights for SUE (Click to Edit / Delete)</h3>
               <div id="calendar-event-pills-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
             </div>
           </div>
@@ -460,6 +460,19 @@
               </div>
             </div>
 
+            <!-- Saved Weekly Attendance Logs Drawer -->
+            <div class="my-4 p-4 rounded-xl bg-indigo-50/50 border border-indigo-100">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="history" class="w-3.5 h-3.5 text-indigo-600"></i> Saved Session Logs by Week & Date
+                </span>
+                <span class="text-[11px] text-slate-400">Click a log to edit or delete saved session date</span>
+              </div>
+              <div id="attendance-saved-sessions-list" class="flex flex-wrap gap-2 pt-1">
+                <!-- Dynamically rendered saved session badges with edit & delete -->
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 my-5 bg-slate-50 p-4 rounded-xl border border-slate-200/70">
               <div>
                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">Class Cohort</label>
@@ -475,7 +488,7 @@
                   <option value="4">Week 4</option>
                   <option value="5">Week 5</option>
                   <option value="6">Week 6</option>
-                  <option value="7" selected>Week 7</option>
+                  <option value="7">Week 7</option>
                   <option value="8">Week 8</option>
                   <option value="9">Week 9</option>
                   <option value="10">Week 10</option>
@@ -499,12 +512,12 @@
 
               <div>
                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">Session Date</label>
-                <input type="date" id="att-date-input" value="2026-10-19" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <input type="date" id="att-date-input" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
               </div>
             </div>
 
             <div class="flex flex-wrap items-center justify-between text-xs font-medium py-2.5 px-4 bg-slate-100 rounded-xl mb-4 gap-2">
-              <span id="att-summary-text">Week 7 • 2 Hours</span>
+              <span id="att-summary-text">Week 1 • 2 Hours</span>
               <div class="flex items-center gap-3 text-[11px]">
                 <span class="inline-flex items-center gap-1 font-bold text-emerald-700"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> &ge; 80% Eligible</span>
                 <span class="inline-flex items-center gap-1 font-bold text-amber-700"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 70% &ndash; 79% Warning</span>
@@ -1060,76 +1073,76 @@
   </div>
 
   <div id="modal-add-assessment" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <!-- MODAL: EDIT TOPIC -->
+  <div id="modal-edit-topic" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <h3 class="font-bold text-slate-800 text-base">Add Assessment Component</h3>
-        <button onclick="closeModal('modal-add-assessment')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <h3 class="font-bold text-slate-800 text-base">Edit Topic</h3>
+        <button onclick="closeModal('modal-edit-topic')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
+      <input type="hidden" id="edit-topic-id">
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 uppercase mb-1">Assessment Name</label>
-          <input type="text" id="input-assess-title" placeholder="e.g. Mid-Term Essay" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Topic Title</label>
+          <input type="text" id="edit-topic-title" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-bold text-slate-700 uppercase mb-1">Weightage (%)</label>
-            <input type="number" id="input-assess-weight" min="1" max="100" placeholder="e.g. 25" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 font-bold">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 uppercase mb-1">Due Date</label>
-            <input type="date" id="input-assess-duedate" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
-          </div>
-        </div>
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
-            <input type="checkbox" id="input-assess-requires-link" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
-            <span>Require Online Submission Link from Student</span>
-          </label>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Description</label>
+          <textarea id="edit-topic-desc" rows="3" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500"></textarea>
         </div>
       </div>
-      <div class="mt-5 flex justify-end gap-2">
-        <button onclick="closeModal('modal-add-assessment')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold">Cancel</button>
-        <button onclick="submitNewAssessment()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm">Add Component</button>
+      <div class="mt-5 flex items-center justify-between">
+        <button onclick="deleteTopic()" class="text-rose-600 hover:text-rose-800 text-xs font-semibold flex items-center gap-1">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Topic
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeModal('modal-edit-topic')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold">Cancel</button>
+          <button onclick="saveEditedTopic()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm">Save Changes</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="modal-edit-assessment" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <!-- MODAL: EDIT CALENDAR EVENT -->
+  <div id="modal-edit-calendar-event" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <h3 class="font-bold text-slate-800 text-base">Edit Assessment Component</h3>
-        <button onclick="closeModal('modal-edit-assessment')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <h3 class="font-bold text-slate-800 text-base">Edit Academic Date / Holiday</h3>
+        <button onclick="closeModal('modal-edit-calendar-event')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <input type="hidden" id="edit-assess-id">
+      <input type="hidden" id="edit-cal-id">
       <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 uppercase mb-1">Assessment Name</label>
-          <input type="text" id="edit-assess-title" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Event Name</label>
+          <input type="text" id="edit-cal-title" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Category</label>
+          <select id="edit-cal-type" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 font-semibold">
+            <option value="holiday">Public Holiday</option>
+            <option value="midsem">Mid-Semester Break</option>
+            <option value="study">Study Week</option>
+            <option value="exam">Examination Period</option>
+          </select>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 uppercase mb-1">Weightage (%)</label>
-            <input type="number" id="edit-assess-weight" min="1" max="100" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 font-bold">
+            <label class="block font-bold text-slate-700 uppercase mb-1">Start Date</label>
+            <input type="date" id="edit-cal-start" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 uppercase mb-1">Due Date</label>
-            <input type="date" id="edit-assess-duedate" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
+            <label class="block font-bold text-slate-700 uppercase mb-1">End Date</label>
+            <input type="date" id="edit-cal-end" class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500">
           </div>
-        </div>
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <label class="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
-            <input type="checkbox" id="edit-assess-requires-link" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
-            <span>Require Online Submission Link from Student</span>
-          </label>
         </div>
       </div>
       <div class="mt-5 flex items-center justify-between">
-        <button onclick="deleteAssessmentComponent()" class="text-rose-600 hover:text-rose-800 text-xs font-semibold flex items-center gap-1">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Component
+        <button onclick="deleteCalendarEvent()" class="text-rose-600 hover:text-rose-800 text-xs font-semibold flex items-center gap-1">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Event
         </button>
         <div class="flex gap-2">
-          <button onclick="closeModal('modal-edit-assessment')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold">Cancel</button>
-          <button onclick="saveEditedAssessment()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm">Save Changes</button>
+          <button onclick="closeModal('modal-edit-calendar-event')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold">Cancel</button>
+          <button onclick="saveEditedCalendarEvent()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm">Save Changes</button>
         </div>
       </div>
     </div>
@@ -2133,56 +2146,471 @@
       const tbody = document.getElementById('student-registry-tbody');
       if (!tbody) return;
       tbody.innerHTML = '';
-      appState.students.forEach((st, idx) => {
+
+      const filterClassEl = document.getElementById('student-filter-class');
+      const searchInputEl = document.getElementById('student-search-input');
+      const selectedClass = filterClassEl ? filterClassEl.value : 'ALL';
+      const searchQuery = searchInputEl ? searchInputEl.value.trim().toLowerCase() : '';
+
+      const filteredStudents = (appState.students || []).filter(st => {
+        const studentClass = st.class || st.className || '';
+        const matchClass = (selectedClass === 'ALL' || studentClass === selectedClass);
+
+        const nameMatch = (st.name || '').toLowerCase().includes(searchQuery);
+        const idMatch = (st.id || st.enrolmentId || '').toLowerCase().includes(searchQuery);
+        const nricMatch = (st.nric || '').toLowerCase().includes(searchQuery);
+
+        return matchClass && (nameMatch || idMatch || nricMatch);
+      });
+
+      if (filteredStudents.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-6 text-center text-slate-400 text-xs italic">
+              No students found matching current filter or search criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filteredStudents.forEach((st, idx) => {
+        const stId = st.id || st.enrolmentId;
+        const stClass = st.class || st.className || 'Class A';
         tbody.innerHTML += `
-          <tr class="hover:bg-slate-50 border-b border-slate-100">
+          <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors">
             <td class="p-3.5 text-slate-400 font-mono">${idx + 1}</td>
             <td class="p-3.5 font-bold text-slate-800">${st.name}</td>
-            <td class="p-3.5 font-mono text-indigo-700">${st.id}</td>
+            <td class="p-3.5 font-mono text-indigo-700 font-semibold">${stId}</td>
             <td class="p-3.5 font-mono text-slate-600">${st.nric}</td>
-            <td class="p-3.5">${st.class}</td>
+            <td class="p-3.5"><span class="px-2 py-0.5 rounded-md bg-slate-100 font-bold text-slate-700 text-xs">${stClass}</span></td>
             <td class="p-3.5 text-center">
-              <button onclick="openEditStudentModal('${st.id}')" class="p-1 text-slate-500 hover:text-indigo-600"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-              <button onclick="deleteStudent('${st.id}')" class="p-1 text-slate-500 hover:text-rose-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              <button onclick="openEditStudentModal('${stId}')" class="p-1 text-slate-500 hover:text-indigo-600 transition" title="Edit Student"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+              <button onclick="deleteStudent('${stId}')" class="p-1 text-slate-500 hover:text-rose-600 transition" title="Delete Student"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </td>
           </tr>
         `;
       });
       lucide.createIcons();
     }
+    function renderLearningMaterials() {
+      const list = document.getElementById('lecturer-topics-list');
+      if (!list) return;
+      list.innerHTML = '';
 
-    function openAddStudentModal() {
-      document.getElementById('st-input-name').value = '';
-      document.getElementById('st-input-id').value = '';
-      document.getElementById('st-input-nric').value = '';
-      syncClassDropdowns();
-      document.getElementById('modal-add-student').classList.remove('hidden');
+      let totalItems = 0, totalCompleted = 0;
+      const totalStudents = appState.students.length || 1;
+      appState.topics.forEach(t => totalItems += (t.materials || []).length);
+      appState.students.forEach(st => totalCompleted += (appState.studentChecklist[st.id] || []).length);
+
+      const masterPct = Math.round((totalCompleted / ((totalItems * totalStudents) || 1)) * 100);
+      const masterFill = document.getElementById('master-progress-bar-fill');
+      const masterText = document.getElementById('master-progress-percentage');
+      if (masterFill) masterFill.style.width = `${masterPct}%`;
+      if (masterText) masterText.innerText = `${masterPct}%`;
+
+      renderClassProgressMonitoring();
+
+      appState.topics.forEach((topic, tIdx) => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4";
+        const topicItems = (topic.materials || []).map(m => {
+          let icon = m.type === 'quiz' ? 'help-circle' : (m.type === 'game' ? 'gamepad-2' : (m.type === 'link' ? 'link-2' : 'file-text'));
+          return `
+            <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <i data-lucide="${icon}" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h5 class="text-xs font-bold text-slate-800">${m.title}</h5>
+                  <span class="text-[10px] uppercase font-bold text-slate-400">${m.type}</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <a href="${m.url}" target="_blank" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-50 text-indigo-700">Preview</a>
+                <button onclick="deleteMaterialItem(${topic.id}, '${m.id}')" class="text-slate-400 hover:text-rose-600 p-1" title="Delete Material"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700">Topic ${tIdx + 1}</span>
+                <h3 class="font-bold text-slate-800 text-sm">${topic.title}</h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">${topic.desc || ''}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openEditTopicModal(${topic.id})" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1" title="Edit Topic Title & Description">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit Topic
+              </button>
+              <button onclick="openAddMaterialModal(${topic.id})" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Material
+              </button>
+            </div>
+          </div>
+          <div class="space-y-2 pt-1">${topicItems || '<p class="text-xs text-slate-400 italic">No materials uploaded yet.</p>'}</div>
+        `;
+        list.appendChild(card);
+      });
+      lucide.createIcons();
     }
 
-    function submitNewStudent() {
-      const name = document.getElementById('st-input-name').value.trim();
-      const id = document.getElementById('st-input-id').value.trim().toUpperCase();
-      const nric = document.getElementById('st-input-nric').value.trim();
-      const assignedClass = document.getElementById('st-input-class').value;
-      if (!name || !id || !nric) { showNotification("Fill in all student fields", "error"); return; }
-      appState.students.push({ id, name, nric, class: assignedClass });
-      seedAttendanceAndMarks(appState);
+    function openEditTopicModal(topicId) {
+      const topic = appState.topics.find(t => String(t.id) === String(topicId));
+      if (!topic) return;
+      document.getElementById('edit-topic-id').value = topic.id;
+      document.getElementById('edit-topic-title').value = topic.title;
+      document.getElementById('edit-topic-desc').value = topic.desc || '';
+      document.getElementById('modal-edit-topic').classList.remove('hidden');
+    }
+
+    function saveEditedTopic() {
+      const topicId = document.getElementById('edit-topic-id').value;
+      const topic = appState.topics.find(t => String(t.id) === String(topicId));
+      if (!topic) return;
+
+      const title = document.getElementById('edit-topic-title').value.trim();
+      const desc = document.getElementById('edit-topic-desc').value.trim();
+      if (!title) { showNotification("Topic title is required", "error"); return; }
+
+      topic.title = title;
+      topic.desc = desc;
       saveState();
-      closeModal('modal-add-student');
-      renderStudentListTable();
-      renderDashboard();
+      closeModal('modal-edit-topic');
+      renderLearningMaterials();
+      showNotification("Topic updated successfully!", "success");
     }
 
-    function openEditStudentModal(id) {
-      const st = appState.students.find(s => s.id === id);
-      if (!st) return;
-      document.getElementById('edit-st-original-id').value = st.id;
-      document.getElementById('edit-st-name').value = st.name;
-      document.getElementById('edit-st-id').value = st.id;
-      document.getElementById('edit-st-nric').value = st.nric;
-      syncClassDropdowns();
-      document.getElementById('edit-st-class').value = st.class;
-      document.getElementById('modal-edit-student').classList.remove('hidden');
+    function deleteTopic() {
+      const topicId = document.getElementById('edit-topic-id').value;
+      if (!confirm("Are you sure you want to permanently delete this topic and all its materials?")) return;
+      appState.topics = appState.topics.filter(t => String(t.id) !== String(topicId));
+      saveState();
+      closeModal('modal-edit-topic');
+      renderLearningMaterials();
+      showNotification("Topic deleted.", "info");
+    }
+    function renderAttendanceSheet() {
+      const selectedClass = document.getElementById('att-class-select').value;
+      const selectedWeek = document.getElementById('att-week-select').value;
+      const durationSelect = document.getElementById('att-duration-select');
+      const dateInput = document.getElementById('att-date-input');
+      const tbody = document.getElementById('attendance-table-body');
+      if (!tbody) return;
+
+      // Render Saved Weekly Logs
+      renderSavedAttendanceSessions();
+
+      // Ensure weekly metadata store exists
+      if (!appState.attendanceWeekMeta) appState.attendanceWeekMeta = {};
+      const weekKey = `${selectedClass}_W${selectedWeek}`;
+      const savedMeta = appState.attendanceWeekMeta[weekKey];
+
+      if (savedMeta) {
+        if (durationSelect) durationSelect.value = savedMeta.hours || 2;
+        if (dateInput && savedMeta.date) dateInput.value = savedMeta.date;
+      } else {
+        if (!dateInput.value) {
+          dateInput.value = new Date().toISOString().split('T')[0];
+        }
+      }
+
+      const duration = parseInt(durationSelect.value) || 2;
+      const summaryText = document.getElementById('att-summary-text');
+      if (summaryText) {
+        const savedDateStr = (savedMeta && savedMeta.date) ? ` • Date: ${savedMeta.date}` : '';
+        summaryText.innerText = `${selectedClass} • Week ${selectedWeek} • ${duration} Hours${savedDateStr}`;
+      }
+
+      const filtered = appState.students.filter(s => {
+        const c = s.class || s.className;
+        return !selectedClass || c === selectedClass;
+      });
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-6 text-center text-slate-400 text-xs italic">
+              No students enrolled in ${selectedClass}.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach((st, idx) => {
+        const stId = st.id || st.enrolmentId;
+        if (!appState.attendanceSessions[stId]) appState.attendanceSessions[stId] = {};
+        if (!appState.attendanceSessions[stId][`W${selectedWeek}`]) {
+          appState.attendanceSessions[stId][`W${selectedWeek}`] = { status: 'Present', hours: duration };
+        }
+        const cur = appState.attendanceSessions[stId][`W${selectedWeek}`];
+        cur.hours = duration;
+
+        let accum = 0;
+        Object.keys(appState.attendanceSessions[stId]).forEach(k => {
+          const slot = appState.attendanceSessions[stId][k];
+          if (['Present', 'Excused', 'MC'].includes(slot.status)) accum += (slot.hours || 2);
+        });
+
+        const pct = Math.min(100, Math.round((accum / (appState.session.totalContactHours || 28)) * 100));
+        let badge = pct >= 80 ? '<span class="text-emerald-700 font-bold">Eligible</span>' : (pct >= 70 ? '<span class="text-amber-700 font-bold">Warning</span>' : '<span class="text-rose-700 font-bold">Barred</span>');
+
+        // Clean status dropdown without emojis
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors">
+            <td class="p-3 text-slate-400 font-mono">${idx + 1}</td>
+            <td class="p-3 font-bold text-slate-800">${st.name}</td>
+            <td class="p-3 font-mono text-slate-600">${stId}</td>
+            <td class="p-3 text-center">
+              <select onchange="updateStudentAttendanceStatus('${stId}', '${selectedWeek}', this.value)" class="text-xs font-semibold border rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500 bg-white">
+                <option value="Present" ${cur.status === 'Present' ? 'selected' : ''}>Present</option>
+                <option value="Absent" ${cur.status === 'Absent' ? 'selected' : ''}>Absent</option>
+                <option value="MC" ${cur.status === 'MC' ? 'selected' : ''}>MC</option>
+                <option value="Excused" ${cur.status === 'Excused' ? 'selected' : ''}>Excused</option>
+              </select>
+            </td>
+            <td class="p-3 text-center font-bold text-slate-700">${accum.toFixed(1)} hrs</td>
+            <td class="p-3 text-center font-black ${pct>=80?'text-emerald-600':pct>=70?'text-amber-600':'text-rose-600'}">${pct}%</td>
+            <td class="p-3 text-center">${badge}</td>
+          </tr>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function renderSavedAttendanceSessions() {
+      const container = document.getElementById('attendance-saved-sessions-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!appState.attendanceWeekMeta || Object.keys(appState.attendanceWeekMeta).length === 0) {
+        container.innerHTML = `<span class="text-xs text-slate-400 italic">No saved dates yet. Select class and week, then click "Save Attendance" to store dates.</span>`;
+        return;
+      }
+
+      Object.entries(appState.attendanceWeekMeta).forEach(([key, meta]) => {
+        const badge = document.createElement('div');
+        badge.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white shadow-2xs text-xs";
+        badge.innerHTML = `
+          <span class="font-bold text-indigo-700">${meta.className}</span>
+          <span class="text-slate-400">•</span>
+          <span class="font-semibold text-slate-700">Week ${meta.week}</span>
+          <span class="text-slate-400">•</span>
+          <span class="font-mono text-slate-600">${meta.date || 'No Date'}</span>
+          <span class="text-[11px] font-bold text-indigo-600">(${meta.hours}h)</span>
+          <button onclick="loadSavedAttendanceSession('${meta.className}', '${meta.week}')" class="text-indigo-600 hover:text-indigo-800 ml-1.5 p-0.5" title="Load & Edit this week"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+          <button onclick="deleteSavedAttendanceSession('${key}')" class="text-slate-300 hover:text-rose-500 p-0.5" title="Delete Saved Date Log"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+        `;
+        container.appendChild(badge);
+      });
+      lucide.createIcons();
+    }
+
+    function loadSavedAttendanceSession(className, week) {
+      const classSelect = document.getElementById('att-class-select');
+      const weekSelect = document.getElementById('att-week-select');
+      if (classSelect) classSelect.value = className;
+      if (weekSelect) weekSelect.value = String(week);
+      renderAttendanceSheet();
+      showNotification(`Loaded Week ${week} (${className}) for editing.`, "info");
+    }
+
+    function deleteSavedAttendanceSession(key) {
+      if (!confirm("Are you sure you want to remove this saved date log?")) return;
+      if (appState.attendanceWeekMeta && appState.attendanceWeekMeta[key]) {
+        delete appState.attendanceWeekMeta[key];
+        saveState();
+        renderAttendanceSheet();
+        showNotification("Saved attendance log removed.", "info");
+      }
+    }
+
+    function saveAttendanceData() {
+      const selectedClass = document.getElementById('att-class-select').value;
+      const selectedWeek = document.getElementById('att-week-select').value;
+      const duration = parseInt(document.getElementById('att-duration-select').value) || 2;
+      const dateVal = document.getElementById('att-date-input').value;
+
+      if (!appState.attendanceWeekMeta) appState.attendanceWeekMeta = {};
+      const weekKey = `${selectedClass}_W${selectedWeek}`;
+      appState.attendanceWeekMeta[weekKey] = {
+        className: selectedClass,
+        week: selectedWeek,
+        hours: duration,
+        date: dateVal,
+        savedAt: new Date().toISOString()
+      };
+
+      saveState();
+      renderAttendanceSheet();
+      renderDashboard();
+      showNotification(`Attendance for ${selectedClass} Week ${selectedWeek} (${dateVal}) saved successfully!`, "success");
+    }
+    function renderCalendar() {
+      const label = document.getElementById('calendar-month-year-label');
+      if (label) label.innerText = `${MONTH_NAMES[calendarCurrentMonth]} ${calendarCurrentYear}`;
+      const gridContainer = document.getElementById('calendar-grid-cells');
+      if (!gridContainer) return;
+      gridContainer.innerHTML = '';
+
+      const firstDay = new Date(calendarCurrentYear, calendarCurrentMonth, 1);
+      const totalDays = new Date(calendarCurrentYear, calendarCurrentMonth + 1, 0).getDate();
+      let startDayIndex = firstDay.getDay() - 1;
+      if (startDayIndex === -1) startDayIndex = 6;
+
+      for (let i = 0; i < startDayIndex; i++) {
+        const blank = document.createElement('div');
+        blank.className = "min-h-[90px] bg-slate-50/60 p-2 text-slate-300 text-xs";
+        gridContainer.appendChild(blank);
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dateString = `${calendarCurrentYear}-${String(calendarCurrentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const matchingEvents = (appState.calendarEvents || []).filter(ev => {
+          const s = ev.startDate || ev.start;
+          const e = ev.endDate || ev.end || s;
+          return dateString >= s && dateString <= e;
+        });
+
+        const dayCell = document.createElement('div');
+        dayCell.className = "min-h-[90px] bg-white p-2 flex flex-col justify-between hover:bg-slate-50 transition border border-slate-100 cursor-pointer";
+        dayCell.onclick = (e) => {
+          // If clicked on day cell, prepopulate date modal
+          if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+            document.getElementById('cal-input-start').value = dateString;
+            document.getElementById('cal-input-end').value = dateString;
+          }
+        };
+
+        let eventsHtml = '';
+        matchingEvents.forEach(ev => {
+          let badgeColor = 'bg-blue-100 text-blue-800 border-blue-200';
+          const type = ev.type || ev.category || '';
+          if (type.toLowerCase().includes('holiday')) badgeColor = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+          else if (type.toLowerCase().includes('break') || type.toLowerCase().includes('midsem')) badgeColor = 'bg-amber-100 text-amber-800 border-amber-200';
+          else if (type.toLowerCase().includes('exam')) badgeColor = 'bg-purple-100 text-purple-800 border-purple-200';
+          
+          eventsHtml += `
+            <div onclick="event.stopPropagation(); openEditCalendarEventModal('${ev.id}')" class="text-[10px] font-semibold px-1.5 py-0.5 rounded border ${badgeColor} truncate mt-1 hover:brightness-95 transition" title="${ev.title} (Click to edit)">
+              ${ev.title}
+            </div>
+          `;
+        });
+
+        dayCell.innerHTML = `<div><span class="text-xs font-bold text-slate-700">${day}</span><div class="space-y-0.5">${eventsHtml}</div></div>`;
+        gridContainer.appendChild(dayCell);
+      }
+
+      const eventCardsBox = document.getElementById('calendar-event-pills-container');
+      if (eventCardsBox) {
+        eventCardsBox.innerHTML = '';
+        (appState.calendarEvents || []).forEach(ev => {
+          const card = document.createElement('div');
+          card.className = "p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-start justify-between gap-3 hover:bg-slate-100/60 transition";
+          let dotBg = 'bg-blue-500';
+          const type = ev.type || ev.category || 'study';
+          if (type.toLowerCase().includes('holiday')) dotBg = 'bg-emerald-500';
+          else if (type.toLowerCase().includes('break') || type.toLowerCase().includes('midsem')) dotBg = 'bg-amber-500';
+          else if (type.toLowerCase().includes('exam')) dotBg = 'bg-purple-500';
+
+          const sDate = ev.startDate || ev.start;
+          const eDate = ev.endDate || ev.end || sDate;
+
+          card.innerHTML = `
+            <div class="flex items-start gap-2.5">
+              <span class="w-3 h-3 rounded-full ${dotBg} mt-1 shrink-0"></span>
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">${ev.title}</h4>
+                <p class="text-[11px] text-slate-500 font-mono">${sDate}${sDate !== eDate ? ' to ' + eDate : ''}</p>
+                <span class="text-[10px] uppercase font-bold text-slate-400">${type}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="openEditCalendarEventModal('${ev.id}')" class="p-1 text-slate-400 hover:text-indigo-600 transition" title="Edit Event"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+            </div>
+          `;
+          eventCardsBox.appendChild(card);
+        });
+      }
+      lucide.createIcons();
+    }
+
+    function openAddCalendarEventModal() {
+      document.getElementById('cal-input-title').value = '';
+      if (!document.getElementById('cal-input-start').value) {
+        document.getElementById('cal-input-start').value = new Date().toISOString().split('T')[0];
+        document.getElementById('cal-input-end').value = new Date().toISOString().split('T')[0];
+      }
+      document.getElementById('modal-add-calendar-event').classList.remove('hidden');
+    }
+
+    function submitNewCalendarEvent() {
+      const title = document.getElementById('cal-input-title').value.trim();
+      const type = document.getElementById('cal-input-type').value;
+      const startDate = document.getElementById('cal-input-start').value;
+      const endDate = document.getElementById('cal-input-end').value || startDate;
+
+      if (!title || !startDate) { showNotification("Please enter event title and date", "error"); return; }
+      if (!appState.calendarEvents) appState.calendarEvents = [];
+      appState.calendarEvents.push({ id: "e-" + Date.now(), title, type, startDate, endDate });
+      saveState();
+      closeModal('modal-add-calendar-event');
+      renderCalendar();
+      showNotification("New academic date added to calendar!", "success");
+    }
+
+    function openEditCalendarEventModal(eventId) {
+      const ev = (appState.calendarEvents || []).find(e => String(e.id) === String(eventId));
+      if (!ev) return;
+      document.getElementById('edit-cal-id').value = ev.id;
+      document.getElementById('edit-cal-title').value = ev.title;
+      document.getElementById('edit-cal-type').value = ev.type || ev.category || 'holiday';
+      document.getElementById('edit-cal-start').value = ev.startDate || ev.start || '';
+      document.getElementById('edit-cal-end').value = ev.endDate || ev.end || ev.startDate || '';
+      document.getElementById('modal-edit-calendar-event').classList.remove('hidden');
+    }
+
+    function saveEditedCalendarEvent() {
+      const id = document.getElementById('edit-cal-id').value;
+      const ev = (appState.calendarEvents || []).find(e => String(e.id) === String(id));
+      if (!ev) return;
+
+      const title = document.getElementById('edit-cal-title').value.trim();
+      const type = document.getElementById('edit-cal-type').value;
+      const startDate = document.getElementById('edit-cal-start').value;
+      const endDate = document.getElementById('edit-cal-end').value || startDate;
+
+      if (!title || !startDate) { showNotification("Title and start date required", "error"); return; }
+
+      ev.title = title;
+      ev.type = type;
+      ev.startDate = startDate;
+      ev.endDate = endDate;
+      delete ev.start;
+      delete ev.end;
+      delete ev.category;
+
+      saveState();
+      closeModal('modal-edit-calendar-event');
+      renderCalendar();
+      showNotification("Calendar event updated successfully!", "success");
+    }
+
+    function deleteCalendarEvent() {
+      const id = document.getElementById('edit-cal-id').value;
+      if (!confirm("Are you sure you want to delete this calendar date?")) return;
+      appState.calendarEvents = (appState.calendarEvents || []).filter(e => String(e.id) !== String(id));
+      saveState();
+      closeModal('modal-edit-calendar-event');
+      renderCalendar();
+      showNotification("Calendar event deleted.", "info");
     }
 
     function saveEditedStudent() {
